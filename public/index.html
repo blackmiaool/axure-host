@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>axure host</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <script src="./js/jquery-3.1.1.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+    <script src="./uploader/js/jquery.dm-uploader.min.js"></script>
+    <link rel="stylesheet" href="./uploader/css/jquery.dm-uploader.min.css">
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <style>
+        html,
+        body {
+            overflow: auto;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            background-image: url("./bg.jpg");
+            background-size: cover;
+        }
+
+        body {
+            padding-top: 20px;
+        }
+
+        #wrap {
+            border-radius: 5px;
+            max-width: 1000px;
+            margin: auto;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(odd) {
+            background-color: rgba(249, 249, 249, 0.5);
+        }
+
+        tr:hover {
+            color: white;
+            background-color: steelblue !important;
+        }
+
+        table .btn {
+            visibility: hidden;
+        }
+
+        table tr:hover .btn {
+            visibility: visible;
+        }
+
+        table a {
+            display: inline-block;
+        }
+
+        .progress-bar {
+            transition: none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="wrap">
+        <header>
+            <button id="create" class="btn btn-primary btn-lg">新建项目</button>
+        </header>
+        <main>
+            <table id="project-list" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th style="width:60%">项目名</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="list-body">
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="drop-area">
+                        <h3>点击按钮上传文件夹</h3>
+                        <input type="file" title="点击按钮上传文件夹" webkitdirectory mozdirectory directory>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="progress">
+                        <div id="upload-progress" class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <a target="_blank" type="button" class="btn btn-primary open-btn">打开页面</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const $listBody = $("#list-body");
+
+        $('#myModal').on('hide.bs.modal', function () {
+            $("#drop-area").dmUploader("destroy");
+        })
+        
+        $("#project-list").on("click", ".update-btn", function () {
+            const {
+                id,
+                name
+            } = $(this).parents('tr').data('li');
+            $("#myModalLabel").text("更新项目: " + name);
+            $("#myModal .open-btn").attr("href", `/serve/${id}/index.html`);
+            let cnt = 0;
+            let finish = 0;
+            $("#drop-area").dmUploader({
+                url: '/upload/',
+                queue: true,
+                onInit() {
+                    $("#upload-progress").css("width", '0%');
+                },
+                onNewFile() {                    
+                    cnt++;
+                },
+                onUploadProgress(p, a) {
+                    finish++;
+                    $("#upload-progress").css('width', finish / cnt * 100 + '%');
+                },
+                extraData: {
+                    id
+                }
+            });
+        });
+        $("#project-list").on("click", ".delete-btn", function () {
+            const {
+                id,
+                name
+            } = $(this).parents('tr').data('li');
+            if(!confirm(`果真要删除 ${name}？`)){
+                return ;
+            }
+            if(!confirm(`确定要删除 ${name}？`)){
+                return ;
+            }
+            if(!confirm(`当真要删除 ${name}？`)){
+                return ;
+            }
+            $.post("/api/delete", {id}, () => {
+                updateList();
+            });
+        });
+        
+        $("#create").click(() => {
+            const result = prompt("请输入项目名");
+            if (!result) {
+                return;
+            }
+            console.log(result);
+            $.post("/api/create", {
+                name: result
+            }, () => {
+                updateList();
+            });
+        });
+        
+
+        function updateList() {
+            $listBody.empty();
+            $.post("/api/list", {}, (list) => {
+                list.forEach((li) => {
+                    const $li = $(`<tr data-id="${li.id}"><td>${li.id}</td><td>${li.name}</td><td>
+                    <a target="_blank" href="/serve/${li.id}/index.html" class="btn btn-warning">打开</a>    
+                    <button class="update-btn btn btn-success"  data-toggle="modal" data-target="#myModal">更新</button>    
+                    <button class="btn btn-danger delete-btn">删除</button>    
+                    </td></tr>`);
+                    $li.data("li", li);
+                    $listBody.append($li);
+                });
+                console.log(list)
+            });
+        }
+        updateList();
+    </script>
+</body>
+
+</html>
