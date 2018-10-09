@@ -122,21 +122,21 @@
                 name
             } = $(this).parents('tr').data('li');
             $("#myModalLabel").text("更新项目: " + name);
-            $("#myModal .open-btn").attr("href", `/serve/${id}/index.html`);
+            $("#myModal .open-btn").attr("href", `/serve/${id}/start.html`);
             let cnt = 0;
             let finish = 0;
             $("#drop-area").dmUploader({
-                url: '/upload/',index.html
+                url: '/upload/',
                 queue: true,
                 onInit() {
-                    $("#upload-pindex.htmlgress").css("width", '0%');
+                    $("#upload-progress").css("width", '0%');
                 },
-                onNewFile() {   index.html               
+                onNewFile() {                    
                     cnt++;
                 },
-                onUploadProgressindex.html, a) {
+                onUploadProgress(p, a) {
                     finish++;
-                    $("#upload-pindex.htmlgress").css('width', finish / cnt * 100 + '%');
+                    $("#upload-progress").css('width', finish / cnt * 100 + '%');
                 },
                 extraData: {
                     id
