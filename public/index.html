@@ -126,17 +126,17 @@
             let cnt = 0;
             let finish = 0;
             $("#drop-area").dmUploader({
-                url: '/upload/',
+                url: '/upload/',index.html
                 queue: true,
                 onInit() {
-                    $("#upload-progress").css("width", '0%');
+                    $("#upload-pindex.htmlgress").css("width", '0%');
                 },
-                onNewFile() {                    
+                onNewFile() {   index.html               
                     cnt++;
                 },
-                onUploadProgress(p, a) {
+                onUploadProgressindex.html, a) {
                     finish++;
-                    $("#upload-progress").css('width', finish / cnt * 100 + '%');
+                    $("#upload-pindex.htmlgress").css('width', finish / cnt * 100 + '%');
                 },
                 extraData: {
                     id
@@ -181,7 +181,7 @@
             $.post("/api/list", {}, (list) => {
                 list.forEach((li) => {
                     const $li = $(`<tr data-id="${li.id}"><td>${li.id}</td><td>${li.name}</td><td>
-                    <a target="_blank" href="/serve/${li.id}/index.html" class="btn btn-warning">打开</a>    
+                    <a target="_blank" href="/serve/${li.id}/start.html" class="btn btn-warning">打开</a>    
                     <button class="update-btn btn btn-success"  data-toggle="modal" data-target="#myModal">更新</button>    
                     <button class="btn btn-danger delete-btn">删除</button>    
                     </td></tr>`);
