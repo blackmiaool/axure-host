@@ -74,6 +74,9 @@ router
             index: "index.html"
         });
     })
+    .post("/md5", async ctx => {
+        const {name}=ctx.request.body;
+    })
     .post("/upload", async ctx => {
         const config = ctx.request.body;
         const file = ctx.request.files.file;
