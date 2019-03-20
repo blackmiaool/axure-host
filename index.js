@@ -15,7 +15,7 @@ const db = require("./db.js");
 // app.use(ctx => {
 //   ctx.body = 'Hello Koa';
 // });
-app.use(koaBody({ multipart: true }));
+app.use(koaBody({ multipart: true,jsonLimit:'50mb',formLimit:'50mb',textLimit:'50mb' }));
 app.use(router.routes()).use(router.allowedMethods());
 
 // app.use(async ctx => {
